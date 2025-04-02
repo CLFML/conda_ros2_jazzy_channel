@@ -47,12 +47,11 @@ def clone_gh_pages(repo):
 
 
 def copy_files_to_gh_pages(pkg_name, version):
-    linux_src = f"pkgs/linux-64/{pkg_name}-{version}.tar.bz2"
-    win_src = f"pkgs/win-64/{pkg_name}-{version}.tar.bz2"
-    
+    linux_src_dir = "pkgs/linux-64"
+    win_src_dir = "pkgs/win-64"
     linux_dst = f"{GH_PAGES_DIR}/linux-64/"
     win_dst = f"{GH_PAGES_DIR}/win-64/"
-
+    
     os.makedirs(linux_dst, exist_ok=True)
     os.makedirs(win_dst, exist_ok=True)
 
