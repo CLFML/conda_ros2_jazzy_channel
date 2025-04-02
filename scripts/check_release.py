@@ -61,8 +61,7 @@ def copy_files_to_gh_pages(pkg_name, version):
     if os.path.exists(win_src):
         shutil.copy2(win_src, win_dst)
     os.chdir(GH_PAGES_DIR)
-    subprocess.run(["conda", "index", "linux-64"], check=True)
-    subprocess.run(["conda", "index", "win-64"], check=True)
+    subprocess.run(["conda", "index", "."])
     os.chdir("..")
 
 
