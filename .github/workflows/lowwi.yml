@@ -1,0 +1,39 @@
+name: Check lowwi release
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # adjust as needed
+  workflow_dispatch:
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Set up Micromamba with conda-index
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: conda-index-env
+          create-args: conda-index
+          init-shell: bash
+
+      - name: Run release checker for ros-jazzy-audio-tools
+        shell: bash -l {0}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/check_release.py ros-jazzy-lowwi CLFML/lowwi
+        
