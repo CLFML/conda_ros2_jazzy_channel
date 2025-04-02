@@ -111,11 +111,13 @@ def main():
     Path("pkgs/win-64").mkdir(parents=True, exist_ok=True)
 
     if linux_asset:
-        linux_dest = f"pkgs/linux-64/{pkg_name}-{latest_version}.tar.bz2"
+        linux_filename = Path(linux_asset).name
+        linux_dest = f"pkgs/linux-64/{linux_filename}"
         download_and_rename(linux_asset, linux_dest)
 
     if windows_asset:
-        win_dest = f"pkgs/win-64/{pkg_name}-{latest_version}.tar.bz2"
+        win_filename = Path(windows_asset).name.replace("-win.tar.bz2", ".tar.bz2")
+        win_dest = f"pkgs/win-64/{win_filename}"
         download_and_rename(windows_asset, win_dest)
 
     update_version_file(pkg_name, latest_version)
