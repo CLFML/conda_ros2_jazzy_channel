@@ -56,11 +56,11 @@ def copy_files_to_gh_pages(pkg_name, version):
     os.makedirs(win_dst, exist_ok=True)
 
     for file in os.listdir(linux_src_dir):
-        if file.startswith(pkg_name) and version in file:
+        if file.startswith(pkg_name) and version.lstrip("v") in file:
             shutil.copy2(os.path.join(linux_src_dir, file), linux_dst)
 
     for file in os.listdir(win_src_dir):
-        if file.startswith(pkg_name) and version in file:
+        if file.startswith(pkg_name) and version.lstrip("v") in file:
             shutil.copy2(os.path.join(win_src_dir, file), win_dst)
 
     os.chdir(GH_PAGES_DIR)
