@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+# artifacts from script
+
+gh-pages-repo/
+pkgs/
