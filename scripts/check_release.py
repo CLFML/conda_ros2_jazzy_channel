@@ -51,14 +51,18 @@ def copy_files_to_gh_pages(pkg_name, version):
     win_src_dir = "pkgs/win-64"
     linux_dst = f"{GH_PAGES_DIR}/linux-64/"
     win_dst = f"{GH_PAGES_DIR}/win-64/"
-    
+
     os.makedirs(linux_dst, exist_ok=True)
     os.makedirs(win_dst, exist_ok=True)
 
-    if os.path.exists(linux_src):
-        shutil.copy2(linux_src, linux_dst)
-    if os.path.exists(win_src):
-        shutil.copy2(win_src, win_dst)
+    for file in os.listdir(linux_src_dir):
+        if file.startswith(pkg_name) and version in file:
+            shutil.copy2(os.path.join(linux_src_dir, file), linux_dst)
+
+    for file in os.listdir(win_src_dir):
+        if file.startswith(pkg_name) and version in file:
+            shutil.copy2(os.path.join(win_src_dir, file), win_dst)
+
     os.chdir(GH_PAGES_DIR)
     subprocess.run(["conda", "index", "."])
     os.chdir("..")
