@@ -20,21 +20,21 @@ jobs:
         with:
           path: main
           ref: main
-          
-      - name: Set up Micromamba with conda-index
-        uses: mamba-org/setup-micromamba@v1
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          environment-name: conda-index-env
-          create-args: conda-index
-          init-shell: bash
-
+          activate-environment: base
+          auto-activate-base: true
+      
+      - name: Install conda-build (for conda index)
+        run: conda install -y conda-build
 
       - name: Find and keep only latest versions
         run: |
           echo "Collecting files to keep based on version files..."
           KEEP_PATTERNS=""
 
-          for VERSION_FILE in main/pkg_versions/*.txt; do
+          for VERSION_FILE in main/PKG_VERSIONS/*.txt; do
             PKG_NAME=$(basename "$VERSION_FILE" .txt)
             VERSION=$(cat "$VERSION_FILE" | tr -d 'v')  # remove leading v
             PATTERN="${PKG_NAME}-${VERSION}*"
