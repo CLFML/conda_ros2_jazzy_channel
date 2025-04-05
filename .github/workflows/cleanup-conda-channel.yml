@@ -62,10 +62,11 @@ jobs:
         run: |
               curl -L https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar -o bfg.jar
               java -jar bfg.jar --delete-files '*.tar.bz2'
-              java -jar bfg.jar --delete-files '*.conda'
+              rm bfg.jar
               git reflog expire --expire=now --all
               git gc --prune=now --aggressive
-              rm bfg.jar
+              git push origin pages --force
+
 
       - name: Rebuild Conda index
         run: conda index .
