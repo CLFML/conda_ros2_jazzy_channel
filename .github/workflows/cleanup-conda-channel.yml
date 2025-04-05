@@ -24,7 +24,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
       
       - name: Install conda-build (for conda index)
-        run: conda install -y conda-build
+        run: conda install -y -c conda-forge conda-index
 
       - name: Find and keep only latest versions
         run: |
