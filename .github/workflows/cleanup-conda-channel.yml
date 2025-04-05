@@ -1,0 +1,59 @@
+name: Cleanup Conda Channel
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'  # Weekly on Sunday at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: pages
+
+      - name: Checkout main branch (for pkg_versions)
+        uses: actions/checkout@v4
+        with:
+          path: main
+          ref: main
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+
+      - name: Find and keep only latest packages
+        run: |
+          echo "Reading latest packages to keep..."
+          KEEP_FILES=$(find main/pkg_versions -type f -name '*.txt' -exec cat {} \; | sort | uniq)
+          
+          echo "Whitelisted package files:"
+          echo "$KEEP_FILES"
+
+          echo "Finding all conda package files..."
+          ALL_FILES=$(find . -type f \( -name '*.tar.bz2' -o -name '*.conda' \))
+
+          for FILE in $ALL_FILES; do
+            BASENAME=$(basename "$FILE")
+            if ! echo "$KEEP_FILES" | grep -qx "$BASENAME"; then
+              echo "Deleting: $FILE"
+              rm "$FILE"
+            fi
+          done
+
+      - name: Rebuild Conda index
+        run: conda index .
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-cleanup old Conda packages (keep latest only)"
+            git push origin pages
+          fi
