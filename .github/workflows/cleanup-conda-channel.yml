@@ -58,12 +58,6 @@ jobs:
       - name: Remove main folder
         run: rm -rf main
     
-      - name: Protect current files before running BFG
-        run: |
-              mkdir -p ../protected
-              cp -r linux-64 ../protected/
-              cp -r win-64 ../protected/
-              cp -r noarch ../protected/
       - name: Run BFG to remove all old binary files
         run: |
               curl -L https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar -o bfg.jar
@@ -73,13 +67,6 @@ jobs:
               git gc --prune=now --aggressive
               rm bfg.jar
 
-      - name: Restore protected files after BFG cleanup
-        run: |
-              cp ../protected/* .
-              git add .
-              git commit -m "Restore kept Conda packages after BFG cleanup"
-
-        
       - name: Rebuild Conda index
         run: conda index .
 
