@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout gh-pages
+      - name: Checkout Conda channel (pages branch)
         uses: actions/checkout@v4
         with:
           ref: pages
@@ -24,21 +24,32 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
 
-      - name: Find and keep only latest packages
+      - name: Find and keep only latest versions
         run: |
-          echo "Reading latest packages to keep..."
-          KEEP_FILES=$(find main/pkg_versions -type f -name '*.txt' -exec cat {} \; | sort | uniq)
-          
-          echo "Whitelisted package files:"
-          echo "$KEEP_FILES"
+          echo "Collecting files to keep based on version files..."
+          KEEP_PATTERNS=""
 
-          echo "Finding all conda package files..."
-          ALL_FILES=$(find . -type f \( -name '*.tar.bz2' -o -name '*.conda' \))
+          for VERSION_FILE in main/pkg_versions/*.txt; do
+            PKG_NAME=$(basename "$VERSION_FILE" .txt)
+            VERSION=$(cat "$VERSION_FILE" | tr -d 'v')  # remove leading v
+            PATTERN="${PKG_NAME}-${VERSION}*"
+            echo "Keeping pattern: $PATTERN"
+            KEEP_PATTERNS="${KEEP_PATTERNS} $PATTERN"
+          done
 
-          for FILE in $ALL_FILES; do
+          echo "Deleting unmatched conda packages..."
+          for FILE in $(find . -type f \( -name '*.tar.bz2' -o -name '*.conda' \)); do
             BASENAME=$(basename "$FILE")
-            if ! echo "$KEEP_FILES" | grep -qx "$BASENAME"; then
-              echo "Deleting: $FILE"
+            MATCHED=false
+            for PATTERN in $KEEP_PATTERNS; do
+              if [[ "$BASENAME" == $PATTERN ]]; then
+                MATCHED=true
+                break
+              fi
+            done
+
+            if [ "$MATCHED" = false ]; then
+              echo "Deleting $FILE"
               rm "$FILE"
             fi
           done
