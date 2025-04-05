@@ -20,9 +20,14 @@ jobs:
         with:
           path: main
           ref: main
+          
+      - name: Set up Micromamba with conda-index
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: conda-index-env
+          create-args: conda-index
+          init-shell: bash
 
-      - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v3
 
       - name: Find and keep only latest versions
         run: |
