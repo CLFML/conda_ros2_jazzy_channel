@@ -22,9 +22,6 @@ jobs:
           ref: main
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: base
-          auto-activate-base: true
       
       - name: Install conda-build (for conda index)
         run: conda install -y conda-build
