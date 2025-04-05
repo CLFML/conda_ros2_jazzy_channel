@@ -55,7 +55,9 @@ jobs:
               rm "$FILE"
             fi
           done
-
+      - name: Remove main folder
+        run: rm -rf main
+        
       - name: Rebuild Conda index
         run: conda index .
 
